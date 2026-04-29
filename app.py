@@ -173,4 +173,4 @@ def main():
     st.pyplot(fig)
 
 if __name__ == "__main__":
-    main() onde visualizamos a nossa solução a funcionar
+    main() # onde visualizamos a nossa solução a funcionar
