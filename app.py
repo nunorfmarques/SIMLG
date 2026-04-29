@@ -82,7 +82,10 @@ def calcular_indicadores(dados, params):
     if dados["historico_ocupacao"]:
         tempos_oc = [d[0] for d in dados["historico_ocupacao"]]
         valores_oc = [d[1] for d in dados["historico_ocupacao"]]
-        area = np.trapz(valores_oc, tempos_oc)
+        
+        # ALTERAÇÃO: np.trapz substituído por np.trapezoid para compatibilidade com NumPy >= 2.0
+        area = np.trapezoid(valores_oc, tempos_oc)
+        
         taxa_ocup = (area / params["duracao_sim"]) / params["num_cais"] * 100
     else:
         taxa_ocup = 0
