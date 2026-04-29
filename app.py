@@ -175,5 +175,59 @@ def main():
     grafico_fila_e_ocupacao(dados, params, ax_fila, ax_ocup)
     st.pyplot(fig)
 
+    # Bloco de Visualização Gráfica
+    st.markdown("### Monitorização do Armazém")
+    
+    # --- NOVA INSERÇÃO: Radar de Chegadas ---
+    fig_radar = grafico_chegadas_timeline(dados, params)
+    if fig_radar:
+        st.pyplot(fig_radar)
+    # ----------------------------------------
+
+    # (O código original abaixo mantém-se intacto)
+    fig, axes = plt.subplots(2, 1, figsize=(10, 8))
+    fig.subplots_adjust(hspace=0.4)
+    
+    ax_fila = axes[0]
+    ax_ocup = axes[1]
+    
+    grafico_fila_e_ocupacao(dados, params, ax_fila, ax_ocup)
+    st.pyplot(fig)
+
+def grafico_chegadas_timeline(dados, params):
+    """
+    Gera uma linha temporal (timeline) dos momentos exatos de chegada de cada viatura.
+    """
+    registos = dados["registos"]
+    if not registos:
+        return None
+
+    tempos_chegada = [r["t_chegada"] for r in registos]
+    ids_viaturas = [r["viatura"] for r in registos]
+    
+    fig, ax = plt.subplots(figsize=(10, 2))
+    
+    # Desenhar linhas verticais no eixo do tempo (pings de chegada)
+    ax.vlines(tempos_chegada, ymin=0, ymax=1, color="#D85A30", linewidth=1.5, alpha=0.8)
+    ax.plot(tempos_chegada, np.ones(len(tempos_chegada)), "o", color="#D85A30", markersize=5)
+    
+    # Adicionar o ID da viatura (texto inclinado para leitura específica)
+    for t, id_v in zip(tempos_chegada, ids_viaturas):
+        ax.text(t, 1.15, id_v, rotation=45, ha='center', va='bottom', fontsize=7, color="#333333")
+        
+    ax.set_title("Radar de Portaria (Momentos Exatos de Chegada)", fontsize=11, fontweight="bold")
+    ax.set_xlabel("Tempo (min)")
+    ax.set_yticks([]) # Ocultar eixo vertical por ser irrelevante
+    ax.set_ylim(0, 2.5) # Margem superior para acomodar o texto inclinado
+    ax.set_xlim(0, params["duracao_sim"])
+    ax.grid(axis="x", linestyle="--", alpha=0.4)
+    
+    # Remover bordas superiores e laterais para um aspeto limpo
+    for spine in ['top', 'right', 'left']:
+        ax.spines[spine].set_visible(False)
+        
+    fig.tight_layout()
+    return fig
+
 if __name__ == "__main__":
     main() # onde visualizamos a nossa solução a funcionar
